@@ -29,13 +29,18 @@ router.get('/', function(req, res, next) {
 });
 
 router.param('id', function(req, res, next, id) {
-  req.kitten = Kitten.findRecord(id);
-  next();
+  Kitten.findRecord(id).then(record => {
+    req.kitten = record;
+    next();
+  })
+  .catch(err => {
+    console.log("Error:", err);
+  });
 });
 
 router.get('/kittens/admin', function(req, res, next) {
   Kitten.findAllRecords()
-   .then( kittens => {
+   .then(kittens => {
      let kittensMap = {}; 
      kittens.forEach((kitten) => { 
        kittensMap[kitten._id] = kitten.name; 
@@ -45,7 +50,7 @@ router.get('/kittens/admin', function(req, res, next) {
        kittens : kittensMap 
      });
    })
-   .catch( err =>{
+   .catch(err =>{
      console.log("Error:", err);
    });
 });
@@ -61,10 +66,10 @@ router.put('/kittens/:id', function(req, res, next) {
     { new: true }
   )
    .exec()
-   .then( record => {
+   .then(() => {
      res.redirect('/kittens/admin');
    })
-   .catch( err => {
+   .catch(err => {
      console.log("Error:", err);
    });
 });
@@ -72,40 +77,25 @@ router.put('/kittens/:id', function(req, res, next) {
 router.post('/kittens', function(req, res, next) {
   let record = new Kitten({ name: req.body.name });
   record.save() // returns promise
-   .then( result => {
+   .then(() => {
      res.redirect('/kittens/admin');
    })
-   .catch( err => {
+   .catch(err => {
      console.log("Error:", err);
    });
 });
 
 router.get('/kittens/:id', function(req, res, next) {
-  let kittenObj;
-  if (req.kitten) {
-    kittenObj = req.kitten;
-  } else {
-    kittenObj = Kitten.findRecord(req.params.id);
-  }
-
-  if (kittenObj) {
-    kittenObj.then( kitten => {
-      console.log(kitten);
-      res.render('edit',{ id : kitten._id , title : kitten.name });
-    })
-    .catch( err => {
-      console.log("Error:", err);
-    });
-  }
+  res.render('edit',{ id : req.kitten._id , title : req.kitten.name });
 });
 
 router.delete('/kittens/:id', function(req, res, next) {
   Kitten.findByIdAndRemove(req.params.id)
    .exec()
-   .then( output => {
+   .then(() => {
      res.send('success');
    })
-   .catch( err => {
+   .catch(err => {
      console.log("Error:", err);
    });
 });

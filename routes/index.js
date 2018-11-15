@@ -24,7 +24,7 @@ kittySchema.statics.findByName = function(name) {
 var Kitten = mongoose.model('Kitten', kittySchema);
 
 /* GET home page. */
-router.get('/', (req, res, next) => {
+router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
@@ -35,7 +35,7 @@ router.param('id', function(req, res, next, id) {
 
 router.get('/kittens/admin', function(req, res, next) {
   Kitten.findAllRecords()
-   .then((kittens) => {
+   .then( kittens => {
      let kittensMap = {}; 
      kittens.forEach((kitten) => { 
        kittensMap[kitten._id] = kitten.name; 
@@ -45,7 +45,7 @@ router.get('/kittens/admin', function(req, res, next) {
        kittens : kittensMap 
      });
    })
-   .catch((err) =>{
+   .catch( err =>{
      console.log("Error:", err);
    });
 });
@@ -61,10 +61,10 @@ router.put('/kittens/:id', function(req, res, next) {
     { new: true }
   )
    .exec()
-   .then((record) => {
+   .then( record => {
      res.redirect('/kittens/admin');
    })
-   .catch((err) => {
+   .catch( err => {
      console.log("Error:", err);
    });
 });
@@ -72,16 +72,16 @@ router.put('/kittens/:id', function(req, res, next) {
 router.post('/kittens', function(req, res, next) {
   let record = new Kitten({ name: req.body.name });
   record.save() // returns promise
-   .then((result) => {
+   .then( result => {
      res.redirect('/kittens/admin');
    })
-   .catch((err) => {
+   .catch( err => {
      console.log("Error:", err);
    });
 });
 
 router.get('/kittens/:id', function(req, res, next) {
-  let kittenObj = '';
+  let kittenObj;
   if (req.kitten) {
     kittenObj = req.kitten;
   } else {
@@ -89,10 +89,10 @@ router.get('/kittens/:id', function(req, res, next) {
   }
 
   if (kittenObj) {
-    kittenObj.then((kitten) => {
+    kittenObj.then( kitten => {
       res.render('edit',{ id : kitten._id , title : kitten.name });
     })
-    .catch((err) => {
+    .catch( err => {
       console.log("Error:", err);
     });
   }
@@ -101,10 +101,10 @@ router.get('/kittens/:id', function(req, res, next) {
 router.delete('/kittens/:id', function(req, res, next) {
   Kitten.findByIdAndRemove(req.params.id)
    .exec()
-   .then((output) => {
+   .then( output => {
      res.send('success');
    })
-   .catch((err) => {
+   .catch( err => {
      console.log("Error:", err);
    });
 });

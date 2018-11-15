@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to Listing View
+
+  a(href="/kittens/create")
+   button(type="button") create new record
+
+  p -----------------------------------------------------------------
+  each val, index in kittens
+    div(class='record_div' id=`${index}`)
+      p Id : #{index}
+      p Name : #{val}
+      p
+        a(href=`/kittens/${index}`) Edit
+      p
+        button(type="button" class="user_delete" id=`${index}`) Delete
+      p -----------------------------------------------------------------
+  block footer
+    script(type='text/javascript' src='/javascripts/jquery-3.3.1.min.js')
+    script(type='text/javascript' src='/javascripts/functions.js')

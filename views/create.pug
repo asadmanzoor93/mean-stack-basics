@@ -1,0 +1,20 @@
+
+extends layout
+
+block content
+  .main.container
+    .row
+      .col-md-6.col-md-offset-3
+        h1.display-4.m-b-2 Create Record
+
+        // register form
+        form(method='POST' action='/kittens/')
+          div.form-group
+            label(for='name') Name : 
+            input#name.form-control(type='text', placeholder='Please Enter Kitten Name' name='name')
+            p 
+            button.btn.btn-primary(type='submit') Create 
+            p
+            a(href="/kittens/admin")
+                button(type="button") Cancel
+                

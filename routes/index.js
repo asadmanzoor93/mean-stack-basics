@@ -14,7 +14,7 @@ kittySchema.statics.findAllRecords = function(id) {
 };
 
 kittySchema.statics.findRecord = function(id) {
-  return this.findOne({ _id : id }).exec();
+  return this.findById(id).exec();
 };
 
 kittySchema.statics.findByName = function(name) {
@@ -90,6 +90,7 @@ router.get('/kittens/:id', function(req, res, next) {
 
   if (kittenObj) {
     kittenObj.then( kitten => {
+      console.log(kitten);
       res.render('edit',{ id : kitten._id , title : kitten.name });
     })
     .catch( err => {

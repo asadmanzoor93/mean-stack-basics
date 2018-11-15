@@ -10,16 +10,16 @@ var kittySchema = new mongoose.Schema({
 });
 
 kittySchema.statics.findAllRecords = function(id) {
-  return this.find({});
+  return this.find({}).exec();
 };
 
 kittySchema.statics.findRecord = function(id) {
-  return this.find({ _id : id });
+  return this.findOne({ _id : id }).exec();
 };
 
 kittySchema.statics.findByName = function(name) {
-  this.find({ name: new RegExp(name, 'i') });
-}
+  return this.findOne({ name: new RegExp(name, 'i') });
+};
 
 var Kitten = mongoose.model('Kitten', kittySchema);
 
@@ -29,27 +29,25 @@ router.get('/', (req, res, next) => {
 });
 
 router.param('id', function(req, res, next, id) {
-  console.log('router.param called !');
-  req.kitten = Kitten.findRecord(id).exec();
+  req.kitten = Kitten.findRecord(id);
   next();
 });
 
 router.get('/kittens/admin', function(req, res, next) {
   Kitten.findAllRecords()
-  .exec()
-  .then((kittens) => {
-    var kittensMap={}; 
-    kittens.forEach((kitten) => { 
-      kittensMap[kitten._id] = kitten.name; 
-    });
-    res.render('admin_index', { 
-      title: 'CRUD Application',
-      kittens : kittensMap 
-    });
-  })
-  .catch((err) =>{
-    console.log("Error:", err);
-  });
+   .then((kittens) => {
+     let kittensMap = {}; 
+     kittens.forEach((kitten) => { 
+       kittensMap[kitten._id] = kitten.name; 
+     });
+     res.render('admin_index', { 
+       title: 'CRUD Application',
+       kittens : kittensMap 
+     });
+   })
+   .catch((err) =>{
+     console.log("Error:", err);
+   });
 });
 
 router.get('/kittens/create', function(req, res, next) {
@@ -62,38 +60,37 @@ router.put('/kittens/:id', function(req, res, next) {
     { $set: { name: req.body.name } }, 
     { new: true }
   )
-  .exec()
-  .then((record) => {
-    res.redirect('/kittens/admin');
-  })
-  .catch((err) => {
-    console.log("Error:", err);
-  });
+   .exec()
+   .then((record) => {
+     res.redirect('/kittens/admin');
+   })
+   .catch((err) => {
+     console.log("Error:", err);
+   });
 });
 
 router.post('/kittens', function(req, res, next) {
-  var record = new Kitten({ name: req.body.name });
+  let record = new Kitten({ name: req.body.name });
   record.save() // returns promise
-  .then((result) => {
-    res.redirect('/kittens/admin');
-  })
-  .catch((err) => {
-    console.log("Error:", err);
-  });
+   .then((result) => {
+     res.redirect('/kittens/admin');
+   })
+   .catch((err) => {
+     console.log("Error:", err);
+   });
 });
 
 router.get('/kittens/:id', function(req, res, next) {
-  var kittenObj = '';
-  if (req.kitten != '' && req.kitten != undefined) {
-    console.log('Using router.param functionality !')
+  let kittenObj = '';
+  if (req.kitten) {
     kittenObj = req.kitten;
   } else {
-    kittenObj = Kitten.findRecord(req.params.id).exec();
+    kittenObj = Kitten.findRecord(req.params.id);
   }
 
-  if (kittenObj != '' && kittenObj != undefined) {
+  if (kittenObj) {
     kittenObj.then((kitten) => {
-      res.render('edit',{ id : kitten[0]._id , title : kitten[0].name });
+      res.render('edit',{ id : kitten._id , title : kitten.name });
     })
     .catch((err) => {
       console.log("Error:", err);
@@ -103,13 +100,13 @@ router.get('/kittens/:id', function(req, res, next) {
 
 router.delete('/kittens/:id', function(req, res, next) {
   Kitten.findByIdAndRemove(req.params.id)
-  .exec()
-  .then((output) => {
-    res.send('success');
-  })
-  .catch((err) => {
-    console.log("Error:", err);
-  });
+   .exec()
+   .then((output) => {
+     res.send('success');
+   })
+   .catch((err) => {
+     console.log("Error:", err);
+   });
 });
 
 module.exports = router;

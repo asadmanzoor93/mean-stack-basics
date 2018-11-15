@@ -10,8 +10,13 @@ block content
         // register form
         form(method='POST' action='/kittens/')
           div.form-group
-            label(for='name') Name : 
-            input#name.form-control(type='text', placeholder='Please Enter Kitten Name' name='name')
+            div
+              label(for='name') Name : 
+              input#name.form-control(type='text', placeholder='Please Enter Kitten Name' name='name')
+            br
+            div
+              label(for='age') Age : 
+              input#age.form-control(type='text', placeholder='Please Enter Kitten Age' name='age')
             p 
             button.btn.btn-primary(type='submit') Create 
             p

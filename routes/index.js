@@ -4,26 +4,10 @@ const router = express.Router();
 
 mongoose.connect('mongodb://localhost/test_collectoion');
 
-/* Schema defination */
-var kittySchema = new mongoose.Schema({
-  name: String
-});
+var Kitten = require("../models/kitten");
+var Story = require("../models/story");
 
-kittySchema.statics.findAllRecords = function(id) {
-  return this.find({}).exec();
-};
-
-kittySchema.statics.findRecord = function(id) {
-  return this.findById(id).exec();
-};
-
-kittySchema.statics.findByName = function(name) {
-  return this.findOne({ name: new RegExp(name, 'i') });
-};
-
-var Kitten = mongoose.model('Kitten', kittySchema);
-
-/* GET home page. */
+/* Kitten Model Routes */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
@@ -41,9 +25,9 @@ router.param('id', function(req, res, next, id) {
 router.get('/kittens/admin', function(req, res, next) {
   Kitten.findAllRecords()
    .then(kittens => {
-     let kittensMap = {}; 
-     kittens.forEach((kitten) => { 
-       kittensMap[kitten._id] = kitten.name; 
+     let kittensMap = []; 
+     kittens.forEach((kitten) => {
+       kittensMap.push(kitten); 
      });
      res.render('admin_index', { 
        title: 'CRUD Application',
@@ -62,7 +46,11 @@ router.get('/kittens/create', function(req, res, next) {
 router.put('/kittens/:id', function(req, res, next) {
   Kitten.findByIdAndUpdate(
     req.params.id, 
-    { $set: { name: req.body.name } }, 
+    { $set: { 
+      name: req.body.name,
+      age : req.body.age
+     } 
+    }, 
     { new: true }
   )
    .exec()
@@ -75,7 +63,11 @@ router.put('/kittens/:id', function(req, res, next) {
 });
 
 router.post('/kittens', function(req, res, next) {
-  let record = new Kitten({ name: req.body.name });
+  let record = new Kitten({ 
+    _id: new mongoose.Types.ObjectId(),
+    name: req.body.name,
+    age : req.body.age
+   });
   record.save() // returns promise
    .then(() => {
      res.redirect('/kittens/admin');
@@ -86,7 +78,11 @@ router.post('/kittens', function(req, res, next) {
 });
 
 router.get('/kittens/:id', function(req, res, next) {
-  res.render('edit',{ id : req.kitten._id , title : req.kitten.name });
+  res.render('edit',{ 
+    id : req.kitten._id, 
+    title : req.kitten.name, 
+    age : req.kitten.age
+  });
 });
 
 router.delete('/kittens/:id', function(req, res, next) {

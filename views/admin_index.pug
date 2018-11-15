@@ -9,11 +9,13 @@ block content
   br
   br
   br
+  h1 Kittens : 
   p -----------------------------------------------------------------
-  each val, index in kittens
-    div(class='record_div' id=`${index}`)
-      p Id : #{index}
-      p Name : #{val}
+  each item in kittens
+    div(class='record_div' id=`${item.id}`)
+      p Id : #{item.id}
+      p Name : #{item.name}
+      p Age : #{item.age}
       p
         a(href=`/kittens/${index}`) Edit
       p

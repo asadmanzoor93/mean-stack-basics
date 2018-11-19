@@ -5,12 +5,16 @@ var Schema = mongoose.Schema;
 var kittySchema = Schema({
   _id: Schema.Types.ObjectId,
   name: String,
-  age: Number,
+  age: { type: Number, min: 1, max: 10 },
   stories: [{ type: Schema.Types.ObjectId, ref: 'Story' }]
 });
 
+kittySchema.virtual('full_information').get(function() {  
+  return this.name + ' - ' + this.age;
+});
+
 kittySchema.statics.findAllRecords = function(id) {
-  return this.find({}).exec();
+  return this.find({}).populate({ path : 'stories', select : 'title' }).exec();
 };
 
 kittySchema.statics.findRecord = function(id) {

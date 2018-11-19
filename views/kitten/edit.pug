@@ -1,11 +1,11 @@
 
-extends layout
+extends layout_kitten
 
 block content
   .main.container
     .row
       .col-md-6.col-md-offset-3
-        h1.display-4.m-b-2 Update Record
+        h1.display-4.m-b-2 Update Kitten
     
         // register form
         form(method='POST' action=`/kittens/${id}` enctype="application/x-www-form-urlencoded")
@@ -21,8 +21,5 @@ block content
             p 
             button.btn.btn-primary(type="submit") Update 
             p
-            a(href="/kittens/admin")
+            a(href="/admin/listing")
                 button(type="button") Cancel
-    block footer
-      script(type='text/javascript' src='/javascripts/jquery-3.3.1.min.js')
-      script(type='text/javascript' src='/javascripts/functions.js')

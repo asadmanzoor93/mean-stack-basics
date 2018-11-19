@@ -7,11 +7,6 @@ mongoose.connect('mongodb://localhost/test_collectoion');
 var Kitten = require("../models/kitten");
 var Story = require("../models/story");
 
-/* Kitten Model Routes */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
 router.param('id', function(req, res, next, id) {
   Kitten.findRecord(id).then(record => {
     req.kitten = record;
@@ -22,16 +17,41 @@ router.param('id', function(req, res, next, id) {
   });
 });
 
-router.get('/kittens/admin', function(req, res, next) {
+router.param('story_id', function(req, res, next, id) {
+  Story.findRecord(id).then(record => {
+    req.story = record;
+    next();
+  })
+  .catch(err => {
+    console.log("Error:", err);
+  });
+});
+
+/* Kitten Model Routes */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express' });
+});
+
+router.get('/admin/listing', function(req, res, next) {
   Kitten.findAllRecords()
    .then(kittens => {
      let kittensMap = []; 
      kittens.forEach((kitten) => {
+       console.log(kitten);
        kittensMap.push(kitten); 
      });
-     res.render('admin_index', { 
-       title: 'CRUD Application',
-       kittens : kittensMap 
+
+     storiesMap = [];
+     Story.find({}).populate({ path : 'author', select : 'name' }).exec().then((stories) => {
+       stories.forEach((story) => {
+        storiesMap.push(story); 
+       });
+
+       res.render('admin_index', { 
+        title: 'CRUD Application',
+        kittens : kittensMap,
+        stories : storiesMap
+       });
      });
    })
    .catch(err =>{
@@ -40,7 +60,7 @@ router.get('/kittens/admin', function(req, res, next) {
 });
 
 router.get('/kittens/create', function(req, res, next) {
-  res.render('create');
+  res.render('kitten/create');
 });
 
 router.put('/kittens/:id', function(req, res, next) {
@@ -55,7 +75,7 @@ router.put('/kittens/:id', function(req, res, next) {
   )
    .exec()
    .then(() => {
-     res.redirect('/kittens/admin');
+     res.redirect('/admin/listing');
    })
    .catch(err => {
      console.log("Error:", err);
@@ -64,21 +84,39 @@ router.put('/kittens/:id', function(req, res, next) {
 
 router.post('/kittens', function(req, res, next) {
   let record = new Kitten({ 
-    _id: new mongoose.Types.ObjectId(),
+    _id : new mongoose.Types.ObjectId(),
     name: req.body.name,
     age : req.body.age
    });
   record.save() // returns promise
-   .then(() => {
-     res.redirect('/kittens/admin');
+   .then(kitten => {
+    
+    var story1 = new Story({
+      title: 'Story of '+req.body.name,
+      author: kitten._id   
+    });
+  
+    story1.save()
+     .then(result => {
+     })
+     .catch(err => {
+       console.log("Error:", err);
+     });
+
+     record.stories.push(story1);
+     record.save(); 
+     res.redirect('/admin/listing');
    })
    .catch(err => {
      console.log("Error:", err);
+     res.render('kitten/create',{
+       error : err.errors
+     });
    });
 });
 
 router.get('/kittens/:id', function(req, res, next) {
-  res.render('edit',{ 
+  res.render('kitten/edit',{ 
     id : req.kitten._id, 
     title : req.kitten.name, 
     age : req.kitten.age
@@ -87,6 +125,61 @@ router.get('/kittens/:id', function(req, res, next) {
 
 router.delete('/kittens/:id', function(req, res, next) {
   Kitten.findByIdAndRemove(req.params.id)
+   .exec()
+   .then(() => {
+     res.send('success');
+   })
+   .catch(err => {
+     console.log("Error:", err);
+   });
+});
+
+/** Story CRUD */
+router.get('/story/create', function(req, res, next) {
+  res.render('story/create_story');
+});
+
+router.post('/story', function(req, res, next) {
+  let record = new Story({ 
+    title: req.body.title
+   });
+  record.save() // returns promise
+   .then(() => {
+     res.redirect('/admin/listing');
+   })
+   .catch(err => {
+
+     console.log("Error:", err);
+   });
+});
+
+router.get('/story/:story_id', function(req, res, next) {
+  res.render('story/edit_story',{ 
+    id : req.story._id, 
+    title : req.story.title
+  });
+});
+
+router.put('/story/:story_id', function(req, res, next) {
+  Story.findByIdAndUpdate(
+    req.params.story_id, 
+    { $set: { 
+      title: req.body.title
+     } 
+    }, 
+    { new: true }
+  )
+   .exec()
+   .then(() => {
+     res.redirect('/admin/listing');
+   })
+   .catch(err => {
+     console.log("Error:", err);
+   });
+});
+
+router.delete('/story/:story_id', function(req, res, next) {
+  Story.findByIdAndRemove(req.params.story_id)
    .exec()
    .then(() => {
      res.send('success');

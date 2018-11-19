@@ -1,0 +1,21 @@
+
+extends layout_story
+
+block content
+  .main.container
+    .row
+      .col-md-6.col-md-offset-3
+        h1.display-4.m-b-2 Update Story
+    
+        // register form
+        form(method='POST' action=`/story/${id}` enctype="application/x-www-form-urlencoded")
+          input(type='hidden',value='PUT',name='_method')
+          div.form-group
+            div
+              label(for='name') Name : 
+              input#title.form-control(type='text', placeholder='Please Enter Story Title' name='title' value=`${title}`)
+            br
+            button.btn.btn-primary(type="submit") Update 
+            p
+            a(href="/admin/listing")
+                button(type="button") Cancel

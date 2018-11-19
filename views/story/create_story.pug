@@ -1,0 +1,30 @@
+
+extends layout_story
+
+block content
+  .main.container
+    .row
+      .col-md-6.col-md-offset-3
+        h1.display-4.m-b-2 Create Story
+        br
+        p 
+          if #{error} != undefined
+          each item in error
+            div(class='record_div' id=`${item._id}`)
+              p Id : #{item._id}
+              p Name : #{item.name}
+              p Age : #{item.age}
+              p 
+        // register form
+        form(method='POST' action='/story/')
+          div.form-group
+            div
+              label(for='name') Title : 
+              input#title.form-control(type='text', placeholder='Please Enter Story Title' name='title')
+            br
+            p 
+            button.btn.btn-primary(type='submit') Create 
+            p
+            a(href="/admin/listing")
+                button(type="button") Cancel
+                

@@ -5,21 +5,44 @@ block content
   p Welcome to Listing View
 
   a(href="/kittens/create")
-   button(type="button") create new record
+   button(type="button") add new Kitten
+  br
+  br
+  a(href="/story/create")
+   button(type="button") add new Story
   br
   br
   br
   h1 Kittens : 
   p -----------------------------------------------------------------
   each item in kittens
-    div(class='record_div' id=`${item.id}`)
-      p Id : #{item.id}
+    div(class='record_div' id=`${item._id}`)
+      p Id : #{item._id}
       p Name : #{item.name}
       p Age : #{item.age}
+      p 
+        each item2 in item.stories
+          p ------
+          h3 Story : 
+          p   Id : #{ (item2._id != undefined) ? item2._id : '' }
+          p   Title : #{ (item2.title != undefined) ? item2.title : '' }
       p
-        a(href=`/kittens/${index}`) Edit
+        a(href=`/kittens/${item._id}`) Edit
       p
-        button(type="button" class="user_delete" id=`${index}`) Delete
+        button(type="button" class="kitten_delete" id=`${item._id}`) Delete
+      p -----------------------------------------------------------------
+  br
+  h1 Stories : 
+  p -----------------------------------------------------------------
+  each story in stories
+    div(class='record_div' id=`${story._id}`)
+      p Id : #{story._id}
+      p Title : #{story.title}
+      p Author : #{ (story.author != undefined) ? story.author.name : '' }
+      p
+        a(href=`/story/${story._id}`) Edit
+      p
+        button(type="button" class="story_delete" id=`${story._id}`) Delete
       p -----------------------------------------------------------------
   block footer
     script(type='text/javascript' src='/javascripts/jquery-3.3.1.min.js')

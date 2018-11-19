@@ -37,7 +37,6 @@ router.get('/admin/listing', function(req, res, next) {
    .then(kittens => {
      let kittensMap = []; 
      kittens.forEach((kitten) => {
-       console.log(kitten);
        kittensMap.push(kitten); 
      });
 
@@ -90,7 +89,6 @@ router.post('/kittens', function(req, res, next) {
    });
   record.save() // returns promise
    .then(kitten => {
-    
     var story1 = new Story({
       title: 'Story of '+req.body.name,
       author: kitten._id   
@@ -100,7 +98,7 @@ router.post('/kittens', function(req, res, next) {
      .then(result => {
      })
      .catch(err => {
-       console.log("Error:", err);
+       console.log("Errors :", err);
      });
 
      record.stories.push(story1);
@@ -108,10 +106,12 @@ router.post('/kittens', function(req, res, next) {
      res.redirect('/admin/listing');
    })
    .catch(err => {
-     console.log("Error:", err);
-     res.render('kitten/create',{
-       error : err.errors
-     });
+     console.log("Errors :", err);
+     if (err.errors){
+      res.render('kitten/create',{
+        errors : err.errors
+      });
+     }
    });
 });
 

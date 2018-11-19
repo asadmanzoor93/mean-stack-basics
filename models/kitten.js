@@ -4,8 +4,8 @@ var Schema = mongoose.Schema;
 /* Schema defination */
 var kittySchema = Schema({
   _id: Schema.Types.ObjectId,
-  name: String,
-  age: { type: Number, min: 1, max: 10 },
+  name: { type: String, required: true },
+  age: { type: Number, required: true, min: 1, max: 10 },
   stories: [{ type: Schema.Types.ObjectId, ref: 'Story' }]
 });
 

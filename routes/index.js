@@ -119,7 +119,8 @@ router.get('/kittens/:id', function(req, res, next) {
   res.render('kitten/edit',{ 
     id : req.kitten._id, 
     title : req.kitten.name, 
-    age : req.kitten.age
+    age : req.kitten.age,
+    full_information : req.kitten.full_information
   });
 });
 

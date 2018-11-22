@@ -20,12 +20,13 @@ block content
       p Id : #{item._id}
       p Name : #{item.name}
       p Age : #{item.age}
-      p 
+      p -------------------
+      div(style='padding-left:20px;')
         each item2 in item.stories
-          p ------
-          h3 Story : 
-          p   Id : #{ (item2._id != undefined) ? item2._id : '' }
-          p   Title : #{ (item2.title != undefined) ? item2.title : '' }
+          p 
+          h3          Story : 
+          p           Id : #{ (item2._id != undefined) ? item2._id : '' }
+          p           Title : #{ (item2.title != undefined) ? item2.title : '' }
       p
         a(href=`/kittens/${item._id}`) Edit
       p
